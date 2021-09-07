@@ -145,6 +145,16 @@ std::string getMinimumPenalties(std::string *genes, int k, int pxy, int pgap,
 	return alignmentHash;
 }
 
+void showTable(int **dp, int m, int n) {
+    for(int i = 0; i < m; i++) {
+        for(int j = 0; j < n; j++) {
+            printf("%3d", dp[i][j]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+
 // function to find out the minimum penalty
 // return the minimum penalty and put the aligned sequences in xans and yans
 int getMinimumPenalty(std::string x, std::string y, int pxy, int pgap, int *xans, int *yans)
@@ -188,6 +198,8 @@ int getMinimumPenalty(std::string x, std::string y, int pxy, int pgap, int *xans
 			}
 		}
 	}
+
+	// showTable(dp, m+1, n+1);
 
 	// Reconstructing the solution
 	int l = n + m; // maximum possible length
