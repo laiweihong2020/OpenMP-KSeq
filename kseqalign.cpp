@@ -134,10 +134,10 @@ std::string getMinimumPenalties(std::string *genes, int k, int pxy, int pgap,
 			alignmentHash=sw::sha512::calculate(alignmentHash.append(problemhash));
 			
 			// Uncomment for testing purposes
-			 std::cout << penalties[probNum] << std::endl;
-			 std::cout << align1 << std::endl;
-			 std::cout << align2 << std::endl;
-			 std::cout << std::endl;
+			//  std::cout << penalties[probNum] << std::endl;
+			//  std::cout << align1 << std::endl;
+			//  std::cout << align2 << std::endl;
+			//  std::cout << std::endl;
 
 			probNum++;
 		}
@@ -171,6 +171,8 @@ int getMinimumPenalty(std::string x, std::string y, int pxy, int pgap, int *xans
 	size *= n + 1;
 	memset (dp[0], 0, size);
 
+	uint64_t t_start = GetTimeStamp ();
+
 	// intialising the table
 	for (i = 0; i <= m; i++)
 	{
@@ -199,7 +201,12 @@ int getMinimumPenalty(std::string x, std::string y, int pxy, int pgap, int *xans
 		}
 	}
 
+	// print the time taken to do the computation
+	printf("Time taken to calculate the table: %ld us\n", (uint64_t) (GetTimeStamp() - t_start));
+
 	// showTable(dp, m+1, n+1);
+
+	uint64_t r_start = GetTimeStamp ();
 
 	// Reconstructing the solution
 	int l = n + m; // maximum possible length
@@ -246,6 +253,9 @@ int getMinimumPenalty(std::string x, std::string y, int pxy, int pgap, int *xans
 		if (j > 0) yans[ypos--] = (int)y[--j];
 		else yans[ypos--] = (int)'_';
 	}
+
+	// print the time taken to do the computation
+	printf("Time taken to calculate the path: %ld us\n", (uint64_t) (GetTimeStamp() - r_start));
 
 	int ret = dp[m][n];
 
