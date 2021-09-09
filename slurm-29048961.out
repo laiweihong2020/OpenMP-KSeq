@@ -1,0 +1,5 @@
+/var/spool/slurm/job29048961/slurm_script: line 12: 50659 Done                    cat mseq-big13-example.dat
+     50660 Killed                  | ./kseqalignDiag.out
+slurmstepd: error: Detected 1 oom-kill event(s) in StepId=29048961.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+Sep  9 19:16:09 spartan-bm101 kernel: Task in /slurm/uid_14448/job_29048961/step_batch killed as a result of limit of /slurm/uid_14448/job_29048961/step_batch
+Sep  9 19:16:09 spartan-bm101 kernel: Memory cgroup stats for /slurm/uid_14448/job_29048961/step_batch: cache:0KB rss:33554432KB rss_huge:33536000KB mapped_file:0KB swap:0KB inactive_anon:4575672KB active_anon:28978740KB inactive_file:0KB active_file:0KB unevictable:0KB

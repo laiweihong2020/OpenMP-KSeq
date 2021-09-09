@@ -1,0 +1,9 @@
+kseqalignDiag.cpp: In function ‘void tileProcessingParallel(int**, int, int, int, int, int)’:
+kseqalignDiag.cpp:307:1: error: expected initializer before ‘}’ token
+  307 | }
+      | ^
+/var/spool/slurm/job29041888/slurm_script: line 12: 27706 Done                    cat mseq-big13-example.dat
+     27707 Killed                  | ./kseqalignDiag.out
+slurmstepd: error: Detected 1 oom-kill event(s) in StepId=29041888.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+Sep  9 17:12:15 spartan-bm091 kernel: Task in /slurm/uid_14448/job_29041888/step_batch killed as a result of limit of /slurm/uid_14448/job_29041888/step_batch
+Sep  9 17:12:15 spartan-bm091 kernel: Memory cgroup stats for /slurm/uid_14448/job_29041888/step_batch: cache:4KB rss:33554428KB rss_huge:33542144KB mapped_file:4KB swap:0KB inactive_anon:3871124KB active_anon:29683224KB inactive_file:0KB active_file:0KB unevictable:0KB

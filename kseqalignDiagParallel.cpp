@@ -16,6 +16,7 @@ std::string getMinimumPenalties(std::string *genes, int k, int pxy, int pgap, in
 void showTable(int **dp, int m, int n);
 int getMinimumPenalty(std::string x, std::string y, int pxy, int pgap, int *xans, int *yans);
 void tileProcessingSeq(int **dp, int i, int j, int di, int dj, int tile, int height, int width, std::string x, std::string y, int pxy, int pgap);
+void tileProcessingParallel(int **dp, int i, int j, int di, int dj, int tile, int height, int width, std::string x, std::string y, int pxy, int pgap);
 
 uint64_t GetTimeStamp() {
     struct timeval tv;
@@ -182,15 +183,15 @@ int getMinimumPenalty(std::string x, std::string y, int pxy, int pgap, int *xans
     int width = n+1;
     int height = m+1;
 
-    int di = 100;
-    int dj = 100;
+    int di = 10;
+    int dj = 10;
 
     i = 0, j = 0;
 
     diagonal = (height/di) + (width/dj);
     diagonal += ((height % di) + (width % dj) > 0) ? 1 : 0;
     
-    #pragma omp parallel for 
+    // #pragma omp parallel for 
     for(int d = 0; d < diagonal; ++d) {
         int diff_i, diff_j, diag_i, diag_j, length, tile;
 
@@ -202,9 +203,9 @@ int getMinimumPenalty(std::string x, std::string y, int pxy, int pgap, int *xans
         length = MIN(diag_i, diag_j);
 
         // We parallelise the tile calculation
-        #pragma omp parallel for
+        // #pragma omp parallel for
         for(tile = 0; tile < length; ++tile) {
-            tileProcessingSeq(dp, i, j, di, dj, tile, height, width, x, y, pxy, pgap);
+            tileProcessingParallel(dp, i, j, di, dj, tile, height, width, x, y, pxy, pgap);
         }
         j += dj;
         if (j >= width) {
@@ -213,7 +214,7 @@ int getMinimumPenalty(std::string x, std::string y, int pxy, int pgap, int *xans
         }
     }
 
-    // showTable(dp, m+1, n+1);
+    showTable(dp, m+1, n+1);
 
     // Reconstructing the solution
 	int l = n + m; // maximum possible length
@@ -300,9 +301,62 @@ void tileProcessingSeq(int **dp, int i, int j, int di, int dj, int tile,
     }
 }
 
-// void tileProcessingParallel(int **dp, int i, int j, int di, int dj, int tile) {
-//     int ii 
-// }
+void tileProcessingParallel(int **dp, int i, int j, int di, int dj, int tile,
+                            int height, int width, std::string x, std::string y, int pxy, int pgap) {
+    int ii = i + (tile * di);
+    int jj = j - (tile * dj);
+
+    int imax = MIN(ii + di, height);
+    int jmax = MIN(jj + dj, width);
+
+    // First, get the start point of every iteration
+    int tileIterations = MIN(MIN(di, imax - ii), MIN(dj, jmax - jj));
+    int iter;
+
+    for(iter = 0; iter < tileIterations; iter++) {
+        int iii, jjj;
+        int startI = ii + iter;
+        int startJ = jj + iter;
+
+        // Check bounds
+        if(startI >= imax) {
+            startI = imax - 1;
+        }
+
+        if(startJ >= jmax) {
+            startJ = jmax - 1;
+        }
+
+        // Expand the loop length and height wise
+        for(iii = startI; iii < imax; iii++) {
+            if(iii == 0 || startJ == 0) {
+                // do nothing
+            } else {
+                if(x[iii - 1] == y[startJ - 1]) {
+                    dp[iii][startJ] = dp[iii-1][startJ-1];
+                } else {
+                    dp[iii][startJ] = min3(dp[iii-1][startJ-1] + pxy,
+                                        dp[iii-1][startJ] + pgap,
+                                        dp[iii][startJ-1] + pgap);
+                }
+            }
+        }
+
+        for(jjj = startJ; jjj < jmax; jjj++) {
+            if(jjj == 0 || startI == 0) {
+                // do nothing
+            } else {
+                if(x[startI - 1] == y[jjj - 1]) {
+                    dp[startI][jjj] = dp[startI - 1][jjj - 1]; 
+                } else {
+                    dp[startI][jjj] = min3(dp[startI-1][jjj-1] + pxy,
+                                           dp[startI-1][jjj] + pgap,
+                                           dp[startI][jjj-1] + pgap);
+                }
+            }
+        }
+    }
+}
 
 void showTable(int **dp, int m, int n) {
     for(int i = 0; i < m; i++) {
